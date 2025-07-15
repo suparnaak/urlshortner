@@ -35,8 +35,10 @@ export class AuthController {
       const result = await this.authService.login({ email, password });
       res.cookie('token', result.token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        /* secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict', */
+        secure: true,                // Always true in deployed apps with HTTPS
+  sameSite: 'none',
         maxAge: 3600000,
       });
       return res.status(STATUS.OK).json({ message: result.message, user: result.user });
@@ -50,8 +52,10 @@ export class AuthController {
   logout(req: Request, res: Response) {
     res.clearCookie('token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      /* secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict', */
+       secure: true,
+  sameSite: 'none',
     });
     return res.status(STATUS.OK).json({ message: MESSAGES.AUTH.LOGOUT });
   }
