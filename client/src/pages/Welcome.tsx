@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Login from "./Login";
 import Register from "./Register";
+import { useLocation } from "react-router-dom";
 
 export default function Welcome() {
+  const location = useLocation();
   const [mode, setMode] = useState<"login" | "register">("login");
   const { setError } = useAuth();
-
+  useEffect(() => {
+    if (location.state?.mode) {
+      setMode(location.state.mode);
+    }
+  }, [location.state]);
   const handleModeChange = (newMode: "login" | "register") => {
     setMode(newMode);
     setError(null);

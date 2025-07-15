@@ -18,7 +18,7 @@ export default function Register() {
     setError(null);
     try {
       await register(name, email, password, confirmPassword);
-      navigate("/login");
+navigate("/", { state: { mode: "login" } });
     } catch (err: any) {}
   };
 
