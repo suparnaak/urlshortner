@@ -1,10 +1,3 @@
-// client/src/components/Spinner.tsx
-import React from "react";
-
-/**
- * A simple SVG spinner using TailwindCSS for animations.
- * Place this in your components directory and import where needed.
- */
 export default function Spinner() {
   return (
     <svg
