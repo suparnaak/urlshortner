@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Spinner from "../components/Spinner";
+import toast from "react-hot-toast";
+
 
 export default function Register() {
   const { register, error: authError, registerLoading } = useAuth();
@@ -19,8 +21,8 @@ export default function Register() {
     setError(null);
     try {
       await register(name, email, password, confirmPassword);
-      alert("Registration Successful")
-navigate("/", { state: { mode: "login" } });
+      toast.success("Registration successful! You can now log in.");
+      navigate("/", { state: { mode: "login" } });
     } catch (err: any) {}
   };
 

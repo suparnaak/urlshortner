@@ -36,9 +36,7 @@ export class UrlController {
       const originalUrl = await this.urlService.redirectUrl(shortCode);
       return res.redirect(originalUrl);
     } catch (err: any) {
-      /* const status = err.status || STATUS.INTERNAL_SERVER_ERROR;
-      const message = err.message || MESSAGES.GENERAL.SERVER_ERROR;
-      return res.status(status).json({ message }); */
+
       return res.redirect(`${process.env.FRONTEND_URL}/not-found`);
     }
   }
