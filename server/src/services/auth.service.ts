@@ -23,7 +23,7 @@ export class AuthService {
     if (!user) {
       throw { status: STATUS.BAD_REQUEST, message: MESSAGES.AUTH.LOGIN_FAILED };
     }
-
+ 
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
       throw { status: STATUS.BAD_REQUEST, message: MESSAGES.AUTH.LOGIN_FAILED };

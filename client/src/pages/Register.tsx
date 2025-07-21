@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import Spinner from "../components/Spinner";
 
 export default function Register() {
-  const { register, error: authError } = useAuth();
+  const { register, error: authError, registerLoading } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,6 +19,7 @@ export default function Register() {
     setError(null);
     try {
       await register(name, email, password, confirmPassword);
+      alert("Registration Successful")
 navigate("/", { state: { mode: "login" } });
     } catch (err: any) {}
   };
@@ -305,11 +307,18 @@ navigate("/", { state: { mode: "login" } });
         </div>
 
         <button
-          type="submit"
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
-        >
-          Create Account
-        </button>
+        type="submit"
+        disabled={registerLoading}
+        className={`w-full flex items-center justify-center
+          bg-gradient-to-r from-blue-600 to-purple-600
+          text-white py-3 rounded-xl font-medium transition-all duration-200 shadow-lg transform
+          ${registerLoading
+            ? "opacity-75 cursor-not-allowed"
+            : "hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"}`
+        }
+      >
+        {registerLoading ? <Spinner /> : "Create Account"}
+      </button>
       </form>
 
       <div className="text-center">

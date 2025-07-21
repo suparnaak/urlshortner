@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import Spinner from "../components/Spinner";
 
 export default function Login() {
-  const { login, error: authError } = useAuth();
+  const { login, error: authError, loginLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -178,11 +179,18 @@ export default function Login() {
         </div>
 
         <button
-          type="submit"
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
-        >
-          Sign In
-        </button>
+        type="submit"
+        disabled={loginLoading}
+        className={`w-full flex items-center justify-center
+          bg-gradient-to-r from-blue-600 to-purple-600
+          text-white py-3 rounded-xl font-medium transition-all duration-200 shadow-lg transform
+          ${loginLoading
+            ? "opacity-75 cursor-not-allowed"
+            : "hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"}`
+        }
+      >
+        {loginLoading ? <Spinner /> : "Sign In"}
+      </button>
       </form>
 
       <div className="text-center">

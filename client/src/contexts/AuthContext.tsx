@@ -1,4 +1,3 @@
-// client/src/contexts/AuthContext.tsx
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import api from "../services/api";
@@ -11,7 +10,9 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  loading: boolean;
+  loading: boolean;          
+  loginLoading: boolean;     
+  registerLoading: boolean;  
   error: string | null;
   setError: (error: string | null) => void;
   register: (
@@ -29,6 +30,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -51,6 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     confirmPassword: string
   ) => {
     setError(null);
+    setRegisterLoading(true);
     try {
       await api.post("/api/auth/register", {
         name,
@@ -61,17 +65,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed");
       throw err;
+    } finally {
+      setRegisterLoading(false);
     }
   };
 
   const login = async (email: string, password: string) => {
     setError(null);
+    setLoginLoading(true);
     try {
       const res = await api.post("/api/auth/login", { email, password });
       setUser(res.data.user);
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed");
       throw err;
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -80,7 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await api.post("/api/auth/logout");
       setUser(null);
-      window.location.href = "/"; 
+      window.location.href = "/";
     } catch (err: any) {
       setError("Logout failed");
       throw err;
@@ -89,7 +98,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, error, setError, register, login, logout }}
+      value={{
+        user,
+        loading,
+        loginLoading,
+        registerLoading,
+        error,
+        setError,
+        register,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

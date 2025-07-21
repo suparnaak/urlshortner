@@ -8,7 +8,6 @@ interface JwtPayload {
 
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token; 
-console.log("token",token)
   if (!token) {
     return res.status(STATUS.UNAUTHORIZED).json({ message: MESSAGES.AUTH.UNAUTHORIZED });
   }
