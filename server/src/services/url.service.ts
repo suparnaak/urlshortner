@@ -15,7 +15,7 @@ export class UrlService {
         originalUrl: existingUrl.originalUrl,
         shortUrl: `${process.env.BASE_URL}/${existingUrl.shortCode}`,
         isExisting: true,
-        message: 'This URL has already been shortened by you.'
+        message: MESSAGES.SHORT_URL.USED
       };
     }
   

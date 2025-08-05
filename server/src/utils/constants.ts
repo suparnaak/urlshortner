@@ -28,6 +28,7 @@ export const MESSAGES = {
   SHORT_URL:{
     URL_NOT_FOUND:"No URL found",
     DELETED_SUCCESSFUL:"URL deleted successfully",
+    USED:'This URL has already been shortened by you.',
 
   },
 

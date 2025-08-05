@@ -32,8 +32,7 @@ export default function Dashboard() {
   useEffect(() => {
     fetchUrls();
   }, []);
-
-  const fetchUrls = async () => {
+    const fetchUrls = async () => {
     setLoading(true);
     setError(null);
     try {
