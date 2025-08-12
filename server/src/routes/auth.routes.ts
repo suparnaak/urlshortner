@@ -27,6 +27,11 @@ router.post(
   authController.logout.bind(authController)
 );
 
+router.post(
+  '/refresh-token',
+  authController.refresh.bind(authController)
+);
+
 
 router.get(
   '/me',

@@ -41,13 +41,44 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        maxAge: 3600000,
+        maxAge: 10 * 1000,
+      });
+      res.cookie("refreshToken", result.refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
       return res
         .status(STATUS.OK)
         .json({ message: result.message, user: result.user });
     } catch (err: any) {
       const status = err.status || STATUS.INTERNAL_SERVER_ERROR;
+      const message = err.message || MESSAGES.GENERAL.SERVER_ERROR;
+      return res.status(status).json({ message });
+    }
+  }
+   async refresh(req: Request, res: Response) {
+    console.log("refreshtoken")
+    try {
+      const refreshToken = req.cookies?.refreshToken;
+      if (!refreshToken) {
+        return res.status(STATUS.UNAUTHORIZED).json({ message: MESSAGES.AUTH.REFRESH_TOKEN_MISSING });
+      }
+
+      const accessToken = await this.authService.refreshToken(refreshToken);
+
+      res.cookie("token", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+        maxAge: 60 * 60 * 1000, 
+      });
+
+      return res.status(STATUS.OK).json({ message: MESSAGES.AUTH.TOKEN_REFRESHED });
+    } catch (err: any) {
+      const status = err.status || STATUS.UNAUTHORIZED;
       const message = err.message || MESSAGES.GENERAL.SERVER_ERROR;
       return res.status(status).json({ message });
     }
@@ -59,6 +90,12 @@ export class AuthController {
       secure: true,
       sameSite: "none",
     });
+    res.clearCookie("refreshToken", {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+});
+
     return res.status(STATUS.OK).json({ message: MESSAGES.AUTH.LOGOUT });
   }
 

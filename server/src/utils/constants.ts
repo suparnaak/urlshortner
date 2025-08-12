@@ -18,11 +18,14 @@ export const MESSAGES = {
     JWT_MISSING: "JWT secret not configured",
     UNAUTHORIZED: 'Unauthorized access',        
     INVALID_TOKEN: 'Invalid or expired token',
+    REFRESH_TOKEN_SECRET_MISSING:"Refresh token is missing",
+    REFRESH_TOKEN_MISSING:"Refresh token is missing",
     LOGIN_REQUIRED: 'Please login',
 
     REGISTER_SUCCESS: "Registration successful. Please log in.",
     LOGIN_SUCCESS: "Login successful",
     LOGOUT:"Logged out successfully",
+    TOKEN_REFRESHED:"Token refreshed",
   },
 
   SHORT_URL:{

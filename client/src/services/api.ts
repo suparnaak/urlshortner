@@ -10,10 +10,19 @@ const api = axios.create({
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status !== 401) {
-      console.error('API Error:', error);
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        await api.post("/api/auth/refresh-token"); 
+        return api(originalRequest); 
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
+      }
     }
+
     return Promise.reject(error);
   }
 );
