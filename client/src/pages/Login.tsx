@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Spinner from "../components/Spinner";
+import { ROUTES } from "../utils/constants/routeConstants";
 
 export default function Login() {
   const { login, error: authError, loginLoading } = useAuth();
@@ -16,7 +17,7 @@ export default function Login() {
     setError(null);
     try {
       await login(email, password);
-      navigate("/dashboard");
+      navigate(ROUTES.DASHBOARD);
     } catch (err: any) {}
   };
 

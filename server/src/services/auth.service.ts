@@ -1,25 +1,34 @@
-import { User } from "../models/user.model";
+import { IUser, User } from "../models/user.model";
 import { hashPassword, comparePassword } from "../utils/hash.util";
 import jwt, { SignOptions } from "jsonwebtoken";
 import { MESSAGES, STATUS } from "../utils/constants";
 import { RegisterInput, LoginInput } from "../types/auth.types";
+import { BaseUserRepository } from "../repositories/base.user.repository";
+import { UserRepository } from "../repositories/user.repository";
+import { Types } from "mongoose";
 
 export class AuthService {
+  private userRepo: BaseUserRepository;
+
+  constructor(userRepo?: BaseUserRepository) {
+    this.userRepo = userRepo ?? new UserRepository();
+  }
+
   async register({ name, email, password }: RegisterInput) {
-    const existingUser = await User.findOne({ email });
+    const existingUser = await this.userRepo.findByEmail(email);
     if (existingUser) {
       throw { status: STATUS.BAD_REQUEST, message: MESSAGES.AUTH.EMAIL_EXISTS };
     }
 
     const hashedPassword = await hashPassword(password);
-    const newUser = new User({ name, email, password: hashedPassword });
-    await newUser.save();
+  
+    await this.userRepo.create({ name, email, password: hashedPassword });
 
     return { message: MESSAGES.AUTH.REGISTER_SUCCESS };
   }
 
   async login({ email, password }: LoginInput) {
-    const user = await User.findOne({ email });
+    const user = await this.userRepo.findByEmail(email);
     if (!user) {
       throw { status: STATUS.BAD_REQUEST, message: MESSAGES.AUTH.LOGIN_FAILED };
     }
@@ -29,7 +38,7 @@ export class AuthService {
       throw { status: STATUS.BAD_REQUEST, message: MESSAGES.AUTH.LOGIN_FAILED };
     }
 
-    const payload = { userId: user._id };
+    const payload = { userId: user._id.toString() };
     const secret = process.env.JWT_SECRET;
     if (!secret)
       throw {
@@ -75,11 +84,12 @@ export class AuthService {
     let payload: any;
     try {
       payload = jwt.verify(refreshToken, refreshSecret) as any;
-    } catch (err) {
+    } catch (err: any) {
+      console.error("refreshToken verify error:", err.name, err.message);
       throw { status: STATUS.UNAUTHORIZED, message: MESSAGES.AUTH.REFRESH_TOKEN_MISSING };
     }
 
-    const user = await User.findById(payload.userId);
+    const user = await this.userRepo.findById(payload.userId as string | Types.ObjectId);
     if (!user) {
       throw { status: STATUS.UNAUTHORIZED, message: MESSAGES.AUTH.LOGIN_FAILED };
     }
@@ -87,5 +97,12 @@ export class AuthService {
     const newAccessToken = jwt.sign({ userId: user._id }, accessSecret, { expiresIn: "1h" });
 
     return newAccessToken;
+  }
+  async getUserProfile(userId: string): Promise<Omit<IUser, 'password'>> {
+    const user = await this.userRepo.findByIdWithoutPassword(userId);
+    if (!user) {
+      throw { status: STATUS.UNAUTHORIZED, message: MESSAGES.AUTH.LOGIN_REQUIRED };
+    }
+    return user;
   }
 }

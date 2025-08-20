@@ -39,14 +39,19 @@ export class AuthController {
       const result = await this.authService.login({ email, password });
       res.cookie("token", result.token, {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 10 * 1000,
+        /* secure: true,
+        sameSite: "none", */
+        secure: process.env.NODE_ENV === "production", 
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 60 * 60 * 1000,
       });
       res.cookie("refreshToken", result.refreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        /* secure: true,
+        sameSite: "none", */
+        path: "/",
+        secure: process.env.NODE_ENV === "production", 
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
       return res
@@ -59,7 +64,7 @@ export class AuthController {
     }
   }
    async refresh(req: Request, res: Response) {
-    console.log("refreshtoken")
+console.log("refresh called; incoming cookies:", req.cookies);
     try {
       const refreshToken = req.cookies?.refreshToken;
       if (!refreshToken) {
@@ -70,8 +75,10 @@ export class AuthController {
 
       res.cookie("token", accessToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        /* secure: true,
+        sameSite: "none", */
+        secure: process.env.NODE_ENV === "production", 
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         path: "/",
         maxAge: 60 * 60 * 1000, 
       });
@@ -99,19 +106,15 @@ export class AuthController {
     return res.status(STATUS.OK).json({ message: MESSAGES.AUTH.LOGOUT });
   }
 
-  async me(req: Request, res: Response) {
+  
+ async me(req: Request, res: Response) {
     try {
-      const user = await User.findById(req.user!.id).select("-password");
-      if (!user) {
-        return res
-          .status(STATUS.UNAUTHORIZED)
-          .json({ message: MESSAGES.AUTH.LOGIN_REQUIRED });
-      }
+      const user = await this.authService.getUserProfile(req.user!.id);
       return res.status(STATUS.OK).json({ user });
-    } catch {
-      return res
-        .status(STATUS.INTERNAL_SERVER_ERROR)
-        .json({ message: MESSAGES.GENERAL.SERVER_ERROR });
+    } catch (err: any) {
+      const status = err.status || STATUS.INTERNAL_SERVER_ERROR;
+      const message = err.message || MESSAGES.GENERAL.SERVER_ERROR;
+      return res.status(status).json({ message });
     }
   }
 }

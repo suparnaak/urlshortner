@@ -1,9 +1,9 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface UrlDocument extends Document {
   originalUrl: string;
   shortCode: string;
-  user: mongoose.Types.ObjectId;
+  user?: Types.ObjectId | string;
   createdAt: Date;
   clicks: number;
 }

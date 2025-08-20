@@ -54,20 +54,16 @@ export class UrlController {
     }
   }
 
-  async delete(req: Request, res: Response) {
-    try {
-      const urlId = req.params.id;
-      const userId = req.user!.id;
-      const url = await this.urlService.getUrlByIdAndUser(urlId, userId);
-      if (!url) {
-        return res.status(STATUS.NOT_FOUND).json({ message: MESSAGES.SHORT_URL.URL_NOT_FOUND });
-      }
-      await url.deleteOne();
-      return res.status(STATUS.OK).json({ message: MESSAGES.SHORT_URL.DELETED_SUCCESSFUL });
-    } catch (err: any) {
-      const status = err.status || STATUS.INTERNAL_SERVER_ERROR;
-      const message = err.message || MESSAGES.GENERAL.SERVER_ERROR;
-      return res.status(status).json({ message });
-    }
+
+ async delete(req: Request, res: Response) {
+  try {
+    await this.urlService.deleteUrl(req.params.id, req.user!.id);
+    return res.status(STATUS.OK).json({ message: MESSAGES.SHORT_URL.DELETED_SUCCESSFUL });
+  } catch (err: any) {
+    const status = err.status || STATUS.INTERNAL_SERVER_ERROR;
+    const message = err.message || MESSAGES.GENERAL.SERVER_ERROR;
+    return res.status(status).json({ message });
   }
+}
+
 }

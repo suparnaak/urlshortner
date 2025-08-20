@@ -4,6 +4,7 @@ import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import ConfirmModal from '../components/ConfirmModal';
 import ShortenerForm from '../components/ShortenerForm';
+import { ROUTES } from '../utils/constants/routeConstants';
 
 interface Url {
   _id: string;
@@ -25,7 +26,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate(ROUTES.DASHBOARD);
     }
   }, [user, navigate]);
   
@@ -36,7 +37,7 @@ export default function Dashboard() {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get('/api/url/my');
+      const res = await api.get(ROUTES.MY);
       setUrls(res.data.urls);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch URLs');
