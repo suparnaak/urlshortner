@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
-import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import ConfirmModal from '../components/ConfirmModal';
 import ShortenerForm from '../components/ShortenerForm';
 import { ROUTES } from '../utils/constants/routeConstants';
+import { urlService } from '../services/urlService';
 
 interface Url {
   _id: string;
@@ -33,12 +33,13 @@ export default function Dashboard() {
   useEffect(() => {
     fetchUrls();
   }, []);
-    const fetchUrls = async () => {
+
+   const fetchUrls = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get(ROUTES.MY);
-      setUrls(res.data.urls);
+      const response = await urlService.getUserUrls();
+      setUrls(response.urls);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch URLs');
     } finally {
@@ -48,10 +49,11 @@ export default function Dashboard() {
 
   const handleDelete = async (id: string) => {
     try {
-      await api.delete(`/api/url/${id}`);
+      await urlService.deleteUrl(id);
       setUrls(prev => prev.filter(url => url._id !== id));
     } catch (err: any) {
       console.error('Delete error:', err);
+      setError(err.response?.data?.message || 'Failed to delete URL');
     } finally {
       setDeletingId(null);
     }

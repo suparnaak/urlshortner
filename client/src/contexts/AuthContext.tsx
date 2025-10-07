@@ -1,12 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
-import api from "../services/api";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import { authService } from "../services/authService";
+import type { User } from "../types";
 
 interface AuthContextType {
   user: User | null;
@@ -35,16 +30,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    api
-      .get("/api/auth/me")
-      .then((res) => setUser(res.data.user))
-      .catch((err) => {
+    const checkAuth = async () => {
+      try {
+        const response = await authService.getCurrentUser();
+        setUser(response.user);
+      } catch (err: any) {
         if (err.response?.status !== 401) {
           console.error("Auth check failed:", err);
         }
         setUser(null);
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const register = async (
@@ -55,16 +55,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     setError(null);
     setRegisterLoading(true);
+    
     try {
-      await api.post("/api/auth/register", {
+      await authService.register({
         name,
         email,
         password,
         confirmPassword,
       });
     } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed");
-      throw err;
+      const errorMessage = err.response?.data?.message || "Registration failed";
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setRegisterLoading(false);
     }
@@ -73,12 +75,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     setError(null);
     setLoginLoading(true);
+    
     try {
-      const res = await api.post("/api/auth/login", { email, password });
-      setUser(res.data.user);
+      const response = await authService.login({ email, password });
+      setUser(response.user);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed");
-      throw err;
+      const errorMessage = err.response?.data?.message || "Login failed";
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setLoginLoading(false);
     }
@@ -86,13 +90,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     setError(null);
+    
     try {
-      await api.post("/api/auth/logout");
+      await authService.logout();
       setUser(null);
       window.location.href = "/";
     } catch (err: any) {
-      setError("Logout failed");
-      throw err;
+      const errorMessage = "Logout failed";
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
@@ -117,6 +123,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
   return context;
 };

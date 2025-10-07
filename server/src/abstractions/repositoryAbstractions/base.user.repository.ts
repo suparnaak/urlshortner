@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { IUser } from "../models/user.model";
+import { IUser } from "../../models/user.model";
 
 export abstract class BaseUserRepository {
   abstract findByEmail(email: string): Promise<IUser | null>;

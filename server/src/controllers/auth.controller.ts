@@ -3,9 +3,16 @@ import { validationResult } from "express-validator";
 import { AuthService } from "../services/auth.service";
 import { MESSAGES, STATUS } from "../utils/constants";
 import { User } from "../models/user.model";
+import { BaseAuthController } from "../abstractions/controllerAbstractions/base.auth.controller";
+import { BaseAuthService } from "../abstractions/serviceAbstractions/base.auth.service";
 
-export class AuthController {
-  private authService = new AuthService();
+export class AuthController extends BaseAuthController{
+  private authService: BaseAuthService; 
+
+  constructor(authService?: BaseAuthService) { 
+    super();
+    this.authService = authService ?? new AuthService();
+  }
 
   async register(req: Request, res: Response) {
     const errors = validationResult(req);

@@ -2,10 +2,16 @@ import { Request, Response } from 'express';
 import { UrlService } from '../services/url.service';
 import { validationResult } from 'express-validator';
 import { STATUS, MESSAGES } from '../utils/constants';
+import { BaseUrlController } from '../abstractions/controllerAbstractions/base.url.controller';
+import { BaseUrlService } from '../abstractions/serviceAbstractions/base.url.service';
 
-export class UrlController {
-  private urlService = new UrlService();
+export class UrlController extends BaseUrlController {
+  private urlService: BaseUrlService; 
 
+  constructor(urlService?: BaseUrlService) { 
+    super();
+    this.urlService = urlService ?? new UrlService();
+  }
   async shorten(req: Request, res: Response) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

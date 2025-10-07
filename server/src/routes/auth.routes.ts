@@ -1,11 +1,9 @@
 import { Router } from 'express';
-import { AuthController } from '../controllers/auth.controller';
+import { authController } from '../container';
 import { registerValidation, loginValidation } from '../utils/validation';
 import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
-const authController = new AuthController();
-
 
 router.post(
   '/register',
@@ -13,13 +11,11 @@ router.post(
   authController.register.bind(authController)
 );
 
-
 router.post(
   '/login',
   loginValidation,
   authController.login.bind(authController)
 );
-
 
 router.post(
   '/logout',
@@ -31,7 +27,6 @@ router.post(
   '/refresh-token',
   authController.refresh.bind(authController)
 );
-
 
 router.get(
   '/me',

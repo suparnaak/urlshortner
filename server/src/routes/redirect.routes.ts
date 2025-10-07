@@ -1,8 +1,7 @@
 import { Router } from 'express';
-import { UrlController } from '../controllers/url.controller';
+import { urlController } from '../container';
 
 const router = Router();
-const urlController = new UrlController();
 
 router.get('/:code', urlController.redirect.bind(urlController));
 

@@ -1,7 +1,8 @@
 export const ROUTES = {
-    REFRESH_TOKEN:"/api/auth/refresh-token",
-    MY:"/api/url/my",
-    DASHBOARD:"/dashboard",
-    
-
-}
+  HOME: "/",
+  DASHBOARD: "/dashboard",
+  LOGIN: "/login",
+  REGISTER: "/register",
+  WELCOME: "/welcome",
+  PROFILE: "/profile",
+};

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Spinner from "../components/Spinner";
 import toast from "react-hot-toast";
+import { ROUTES } from "../utils/constants/routeConstants";
 
 
 export default function Register() {
@@ -22,7 +23,7 @@ export default function Register() {
     try {
       await register(name, email, password, confirmPassword);
       toast.success("Registration successful! You can now log in.");
-      navigate("/", { state: { mode: "login" } });
+      navigate(ROUTES.HOME, { state: { mode: "login" } });
     } catch (err: any) {}
   };
 

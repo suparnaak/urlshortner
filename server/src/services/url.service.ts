@@ -1,11 +1,13 @@
 import { STATUS, MESSAGES } from "../utils/constants";
-import { BaseUrlRepository } from "../repositories/base.url.repository";
+import { BaseUrlRepository } from "../abstractions/repositoryAbstractions/base.url.repository";
 import { UrlRepository } from "../repositories/url.repository";
+import { BaseUrlService } from "../abstractions/serviceAbstractions/base.url.service";
 
-export class UrlService {
+export class UrlService extends BaseUrlService {
   private urlRepo: BaseUrlRepository;
 
   constructor(urlRepo?: BaseUrlRepository) {
+    super()
     this.urlRepo = urlRepo ?? new UrlRepository();
   }
 

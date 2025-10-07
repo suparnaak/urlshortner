@@ -3,14 +3,16 @@ import { hashPassword, comparePassword } from "../utils/hash.util";
 import jwt, { SignOptions } from "jsonwebtoken";
 import { MESSAGES, STATUS } from "../utils/constants";
 import { RegisterInput, LoginInput } from "../types/auth.types";
-import { BaseUserRepository } from "../repositories/base.user.repository";
+import { BaseUserRepository } from "../abstractions/repositoryAbstractions/base.user.repository";
 import { UserRepository } from "../repositories/user.repository";
 import { Types } from "mongoose";
+import { BaseAuthService } from "../abstractions/serviceAbstractions/base.auth.service";
 
-export class AuthService {
+export class AuthService extends BaseAuthService {
   private userRepo: BaseUserRepository;
 
   constructor(userRepo?: BaseUserRepository) {
+    super()
     this.userRepo = userRepo ?? new UserRepository();
   }
 

@@ -1,5 +1,5 @@
 import { Url, UrlDocument } from "../models/url.model";
-import { BaseUrlRepository } from "./base.url.repository";
+import { BaseUrlRepository } from "../abstractions/repositoryAbstractions/base.url.repository";
 
 export class UrlRepository extends BaseUrlRepository {
   async findByOriginalUrlAndUser(originalUrl: string, userId: string) {

@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { IUser, User } from "../models/user.model";
-import { BaseUserRepository } from "./base.user.repository";
+import { BaseUserRepository } from "../abstractions/repositoryAbstractions/base.user.repository";
 
 export class UserRepository extends BaseUserRepository {
   async findByEmail(email: string): Promise<IUser | null> {

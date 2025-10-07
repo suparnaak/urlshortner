@@ -1,5 +1,5 @@
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
-import { ROUTES } from "../utils/constants/routeConstants";
+import { API_ENDPOINTS } from "./endpoints";
 
 
 const api = axios.create({
@@ -20,7 +20,7 @@ api.interceptors.response.use(
   async (error: AxiosError & { config?: AxiosRequestConfig }) => {
     const originalRequest = error.config!;
 
-    if (originalRequest.url?.includes(ROUTES.REFRESH_TOKEN)) {
+    if (originalRequest.url?.includes(API_ENDPOINTS.AUTH.REFRESH_TOKEN)) {
       return Promise.reject(error);
     }
 
@@ -38,7 +38,7 @@ api.interceptors.response.use(
 
       isRefreshing = true;
       try {
-        await api.post(ROUTES.REFRESH_TOKEN, {}, { withCredentials: true });
+        await api.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN, {}, { withCredentials: true });
         notifySubscribers(true);
         return api(originalRequest);
       } catch (refreshErr) {

@@ -1,15 +1,11 @@
 import React, { useState } from "react";
-import api from "../services/api";
+import { urlService } from "../services/urlService";
+
 
 interface ShortenerFormProps {
   onShortened: () => void;
 }
 
-interface ShortenResponse {
-  shortUrl: string;
-  isExisting?: boolean;
-  message?: string;
-}
 
 export default function ShortenerForm({ onShortened }: ShortenerFormProps) {
   const [originalUrl, setOriginalUrl] = useState("");
@@ -17,23 +13,21 @@ export default function ShortenerForm({ onShortened }: ShortenerFormProps) {
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastShortenedUrl, setLastShortenedUrl] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
     setLoading(true);
 
     try {
-      const response = await api.post("/api/url/shorten", { originalUrl });
-      const data: ShortenResponse = response.data;
+      const response = await urlService.shortenUrl({ originalUrl });
 
       setOriginalUrl("");
-      setLastShortenedUrl(data.shortUrl);
+      setLastShortenedUrl(response.shortUrl);
 
-      if (data.isExisting) {
+      if (response.isExisting) {
         setSuccess(
-          data.message || "URL already exists! Here's your existing short link."
+          response.message || "URL already exists! Here's your existing short link."
         );
       } else {
         setSuccess("URL shortened successfully!");

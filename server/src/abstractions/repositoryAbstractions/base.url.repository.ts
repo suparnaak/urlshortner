@@ -1,4 +1,4 @@
-import { UrlDocument } from "../models/url.model";
+import { UrlDocument } from "../../models/url.model";
 
 export abstract class BaseUrlRepository {
   abstract findByOriginalUrlAndUser(originalUrl: string, userId: string): Promise<UrlDocument | null>;
